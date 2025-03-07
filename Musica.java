@@ -77,7 +77,7 @@ class Playlist {
             canciones.sort(criterioOrden);
         }
         for (Cancion c : canciones) {
-            System.out.println(canciones);
+            System.out.println(c);
         }
     }
 }
