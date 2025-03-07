@@ -59,3 +59,10 @@ class Playlist {
         }
     }
 }
+public class Musica {
+    public static void main(String[] args) {
+        Playlist miPlaylist = new Playlist("Mis Favoritas de la Bichota");
+
+        miPlaylist.agregarCancion(new Cancion("Tusa", "Karol G", 3.6));
+    }
+}
