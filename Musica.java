@@ -16,18 +16,22 @@ class Cancion {
     public String getArtista() { return artista; }
     public double getDuracion() { return duracion; }
 
+    @Override
     public String toString() {
-        return "[" + titulo + " - " + artista + " (" + duracion + " min)]";
+        return "<---Titulo: " + titulo   + "   Artista: " + artista + "   Duración: " + duracion + " Min---->";
+
     }
 }
 
 class Playlist {
     private String nombre;
-    private Queue<Cancion> canciones;
+    private List<Cancion> canciones;
+    private Comparator<Cancion> criterioOrden;
 
     public Playlist(String nombre) {
         this.nombre = nombre;
-        this.canciones = new LinkedList<>();
+        this.canciones = new ArrayList<>();
+        this.criterioOrden = null; // Sin orden específico al inicio
     }
 
     public void agregarCancion(Cancion cancion) {
@@ -40,7 +44,7 @@ class Playlist {
             Cancion c = iterator.next();
             if (c.getTitulo().equalsIgnoreCase(titulo)) {
                 iterator.remove();
-                System.out.println("Canción eliminada: " + c);
+                System.out.println("Canción eliminada: \n" + c);
                 return;
             }
         }
@@ -48,29 +52,32 @@ class Playlist {
     }
 
     public Cancion reproducirSiguiente() {
-        return canciones.poll();
+        return canciones.isEmpty() ? null : canciones.remove(0);
     }
 
     public void ordenarPorDuracion() {
-        List<Cancion> lista = new ArrayList<>(canciones);
-        lista.sort(Comparator.comparingDouble(Cancion::getDuracion));
-        canciones.clear();
-        canciones.addAll(lista);
+        criterioOrden = Comparator.comparingDouble(Cancion::getDuracion);
+        canciones.sort(criterioOrden);
         System.out.println("Playlist ordenada por duración.");
     }
 
     public void ordenarPorArtista() {
-        List<Cancion> lista = new ArrayList<>(canciones);
-        lista.sort(Comparator.comparing(Cancion::getArtista));
-        canciones.clear();
-        canciones.addAll(lista);
+        criterioOrden = Comparator.comparing(Cancion::getArtista);
+        canciones.sort(criterioOrden);
         System.out.println("Playlist ordenada por artista.");
     }
 
     public void mostrarPlaylist() {
         System.out.println("Playlist: " + nombre);
+        if (canciones.isEmpty()) {
+            System.out.println("La playlist está vacía.");
+            return;
+        }
+        if (criterioOrden != null) {
+            canciones.sort(criterioOrden);
+        }
         for (Cancion c : canciones) {
-            System.out.println(c);
+            System.out.println(canciones);
         }
     }
 }
@@ -96,13 +103,15 @@ public class Musica {
 
             switch (opcion) {
                 case 1:
-                    System.out.print("Ingrese título de la canción: ");
+                    System.out.print("Ingrese título: ");
                     String titulo = scanner.nextLine();
                     System.out.print("Ingrese artista: ");
                     String artista = scanner.nextLine();
-                    System.out.print("Ingrese duración (En minutos): ");
+                    System.out.print("Ingrese duración (minutos): ");
                     double duracion = scanner.nextDouble();
+                    scanner.nextLine(); 
                     miPlaylist.agregarCancion(new Cancion(titulo, artista, duracion));
+                    System.out.println("Canción agregada: \n" + titulo + "\n" + artista + "\n" + duracion + " Min");
                     break;
                 case 2:
                     System.out.print("Ingrese el título de la canción a eliminar: ");
@@ -111,15 +120,13 @@ public class Musica {
                     break;
                 case 3:
                     Cancion siguiente = miPlaylist.reproducirSiguiente();
-                    System.out.println(siguiente != null ? "Reproduciendo: " + siguiente : "No hay más canciones en la playlist.");
+                    System.out.println(siguiente != null ? "Reproduciendo: \n" + siguiente : "No hay más canciones en la playlist.");
                     break;
                 case 4:
                     miPlaylist.ordenarPorDuracion();
-                    System.out.println("Playlist ordenada por duración.");
                     break;
                 case 5:
                     miPlaylist.ordenarPorArtista();
-                    System.out.println("Playlist ordenada por artista.");
                     break;
                 case 6:
                     miPlaylist.mostrarPlaylist();
@@ -135,3 +142,4 @@ public class Musica {
         scanner.close();
     }
 }
+
